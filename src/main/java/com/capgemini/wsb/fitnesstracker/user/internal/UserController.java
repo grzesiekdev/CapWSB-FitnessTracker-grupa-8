@@ -81,5 +81,17 @@ class UserController {
                 .body(savedUserDto);
     }
 
+    /**
+     * Deletes a user by their unique ID.
+     *
+     * @param id the ID of the user to delete.
+     * @return a ResponseEntity with HTTP status 204 (No Content) if deletion is successful.
+     * If the user does not exist, a 404 (Not Found) status is returned.
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userService.deleteUserById(id);
+        return ResponseEntity.noContent().build();
+    }
 
 }

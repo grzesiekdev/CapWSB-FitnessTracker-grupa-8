@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
@@ -62,4 +63,16 @@ class UserServiceImpl implements UserService, UserProvider {
         return userRepository.findAll();
     }
 
+    /**
+     * Deletes a user by their unique ID.
+     *
+     * @param id the ID of the user to delete.
+     * @throws NoSuchElementException if the user does not exist.
+     */
+    public void deleteUserById(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new NoSuchElementException("User with ID " + id + " not found.");
+        }
+        userRepository.deleteById(id);
+    }
 }
