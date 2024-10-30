@@ -70,15 +70,24 @@ class UserServiceImpl implements UserService, UserProvider {
     }
 
     /**
-     * Deletes a user by their unique ID.
+     * Deletes a user by their unique ID from the database. If the user has associated records that
+     * prevent deletion (such as foreign key constraints), an exception is thrown.
      *
-     * @param id the ID of the user to delete.
+     * @param id the unique identifier of the user to delete.
      * @throws NoSuchElementException if the user does not exist.
+     * @throws IllegalStateException if the user has associated records that prevent deletion,
+     *         for instance due to foreign key constraints in related tables.
      */
     public void deleteUserById(Long id) {
         if (!userRepository.existsById(id)) {
             throw new NoSuchElementException("User with ID " + id + " not found.");
         }
-        userRepository.deleteById(id);
+
+        try {
+            userRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new IllegalStateException("Error while deleting user: ", e);
+        }
     }
+
 }

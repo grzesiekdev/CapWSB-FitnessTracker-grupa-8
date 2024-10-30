@@ -4,11 +4,13 @@ import com.capgemini.wsb.fitnesstracker.user.api.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * Controller that manages endpoints for user-related operations.
@@ -82,16 +84,33 @@ class UserController {
     }
 
     /**
-     * Deletes a user by their unique ID.
+     * Deletes a user by their unique ID. If the user has associated records that prevent deletion,
+     * or if the user does not exist, an appropriate HTTP status and message are returned.
      *
-     * @param id the ID of the user to delete.
-     * @return a ResponseEntity with HTTP status 204 (No Content) if deletion is successful.
-     * If the user does not exist, a 404 (Not Found) status is returned.
+     * @param id the unique identifier of the user to delete.
+     * @return ResponseEntity with:
+     *         <ul>
+     *           <li>204 No Content if the deletion is successful.</li>
+     *           <li>409 Conflict if the user has associated records that prevent deletion.</li>
+     *           <li>404 Not Found if the user does not exist.</li>
+     *         </ul>
+     * @throws IllegalStateException if the user cannot be deleted due to associated records.
+     * @throws NoSuchElementException if the user with the given ID is not found.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUserById(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+        try {
+            userService.deleteUserById(id);
+            return ResponseEntity.noContent().build();  // 204 No Content if successful
+        } catch (IllegalStateException e) {
+            // Return 409 Conflict with a general message for associated records
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("User cannot be deleted because they are related to other records.");
+        } catch (NoSuchElementException e) {
+            // Return 404 Not Found with a message when user doesn't exist
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("User with ID " + id + " not found.");
+        }
     }
 
     /**
