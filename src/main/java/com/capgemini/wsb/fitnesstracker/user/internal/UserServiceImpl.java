@@ -48,9 +48,15 @@ class UserServiceImpl implements UserService, UserProvider {
         return userRepository.findById(userId);
     }
 
+    /**
+     * Finds users by email, allowing for case-insensitive and partial matches.
+     *
+     * @param email the partial or full email to search for.
+     * @return a list of users whose email contains the specified value, case-insensitively.
+     */
     @Override
-    public Optional<User> getUserByEmail(final String email) {
-        return userRepository.findByEmail(email);
+    public List<User> getUserByEmail(String email) {
+        return userRepository.findByEmailContainingIgnoreCase(email);
     }
 
     /**

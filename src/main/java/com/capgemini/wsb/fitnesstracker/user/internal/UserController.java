@@ -94,4 +94,20 @@ class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Searches for users by a partial email match, ignoring case sensitivity.
+     * Returns a list of users matching the specified email criteria, containing only the ID and email fields.
+     *
+     * @param email the partial or full email string to search for, case-insensitively.
+     * @return a ResponseEntity containing a list of UserEmailDto with HTTP status 200 (OK).
+     *         If no users match, an empty list is returned.
+     */
+    @GetMapping("/email")
+    public ResponseEntity<List<UserEmailDto>> getUsersByEmail(@RequestParam String email) {
+        List<UserEmailDto> users = userService.getUserByEmail(email)
+                .stream()
+                .map(user -> new UserEmailDto(user.getId(), user.getEmail()))
+                .toList();
+        return ResponseEntity.ok(users);
+    }
 }

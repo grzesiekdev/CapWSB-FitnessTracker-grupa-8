@@ -20,3 +20,11 @@ record UserDto(@Nullable Long Id, String firstName, String lastName,
  * @param lastName  the last name of the user.
  */
 record SimpleUserDto(Long id, String firstName, String lastName) {}
+
+/**
+ * A Data Transfer Object representing a user with only ID and email.
+ *
+ * @param id    the unique identifier of the user.
+ * @param email the email address of the user.
+ */
+record UserEmailDto(Long id, String email) {}
