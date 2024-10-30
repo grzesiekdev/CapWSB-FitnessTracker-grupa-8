@@ -10,3 +10,13 @@ record UserDto(@Nullable Long Id, String firstName, String lastName,
                String email) {
 
 }
+
+/**
+ * A Data Transfer Object (DTO) representing a simplified view of a user,
+ * containing only the essential information.
+ *
+ * @param id        the unique identifier of the user.
+ * @param firstName the first name of the user.
+ * @param lastName  the last name of the user.
+ */
+record SimpleUserDto(Long id, String firstName, String lastName) {}

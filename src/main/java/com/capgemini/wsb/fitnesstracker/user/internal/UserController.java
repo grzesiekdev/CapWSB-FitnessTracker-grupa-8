@@ -4,10 +4,15 @@ import com.capgemini.wsb.fitnesstracker.user.api.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
+/**
+ * Controller that manages endpoints for user-related operations.
+ */
 @RestController
 @RequestMapping("/v1/users")
 @RequiredArgsConstructor
@@ -17,6 +22,11 @@ class UserController {
 
     private final UserMapper userMapper;
 
+    /**
+     * Retrieves all users with detailed information.
+     *
+     * @return a list of UserDto containing full details of each user.
+     */
     @GetMapping
     public List<UserDto> getAllUsers() {
         return userService.findAllUsers()
@@ -25,14 +35,51 @@ class UserController {
                           .toList();
     }
 
-    @PostMapping
-    public User addUser(@RequestBody UserDto userDto) throws InterruptedException {
-
-        // Demonstracja how to use @RequestBody
-        System.out.println("User with e-mail: " + userDto.email() + "passed to the request");
-
-        // TODO: saveUser with Service and return User
-        return null;
+    /**
+     * Retrieves a simplified list of users, including only ID, first name, and last name.
+     *
+     * @return a list of SimpleUserDto with basic user details.
+     */
+    @GetMapping("/simple")
+    public List<SimpleUserDto> getSimpleUsers() {
+        return userService.findAllUsers()
+                .stream()
+                .map(userMapper::toSimpleDto)
+                .toList();
     }
+
+    /**
+     * Retrieves detailed information for a specific user by ID.
+     *
+     * @param id the unique identifier of the user.
+     * @return a ResponseEntity containing UserDto if the user is found, or 404 Not Found otherwise.
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
+        return userService.getUser(id)
+                .map(userMapper::toDto)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+
+    /**
+     * Creates a new user with the provided information.
+     *
+     * @param userDto the user data for creating a new user.
+     * @return a ResponseEntity containing the saved UserDto with HTTP 201 Created status.
+     */
+    @PostMapping
+    public ResponseEntity<UserDto> addUser(@RequestBody UserDto userDto) {
+        System.out.println("User with e-mail: " + userDto.email() + " passed to the request");
+        User user = userMapper.toEntity(userDto);
+        User savedUser = userService.createUser(user);
+        UserDto savedUserDto = userMapper.toDto(savedUser);
+
+        return ResponseEntity
+                .created(URI.create("/v1/users/" + savedUser.getId()))
+                .body(savedUserDto);
+    }
+
 
 }
