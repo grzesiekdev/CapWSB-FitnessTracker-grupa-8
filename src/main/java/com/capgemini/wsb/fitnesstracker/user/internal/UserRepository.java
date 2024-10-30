@@ -4,6 +4,7 @@ import com.capgemini.wsb.fitnesstracker.user.api.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -18,4 +19,11 @@ interface UserRepository extends JpaRepository<User, Long> {
      */
     List<User> findByEmailContainingIgnoreCase(String email);
 
+    /**
+     * Finds all users born before the specified date.
+     *
+     * @param date the date to compare against.
+     * @return a list of users born before the given date.
+     */
+    List<User> findByBirthdateBefore(LocalDate date);
 }

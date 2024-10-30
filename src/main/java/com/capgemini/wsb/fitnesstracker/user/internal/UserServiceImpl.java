@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -90,4 +91,13 @@ class UserServiceImpl implements UserService, UserProvider {
         }
     }
 
+    /**
+     * Finds all users who are older than the specified date.
+     *
+     * @param date the date to compare against.
+     * @return a list of users born before the given date.
+     */
+    public List<User> findAllUsersOlderThan(LocalDate date) {
+        return userRepository.findByBirthdateBefore(date);
+    }
 }

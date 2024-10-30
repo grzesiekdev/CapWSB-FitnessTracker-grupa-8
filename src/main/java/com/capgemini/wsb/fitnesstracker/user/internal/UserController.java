@@ -4,13 +4,16 @@ import com.capgemini.wsb.fitnesstracker.user.api.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 /**
  * Controller that manages endpoints for user-related operations.
@@ -127,6 +130,24 @@ class UserController {
                 .stream()
                 .map(user -> new UserEmailDto(user.getId(), user.getEmail()))
                 .toList();
+        return ResponseEntity.ok(users);
+    }
+
+    /**
+     * Retrieves all users who are older than the specified date.
+     *
+     * @param date the date to compare against.
+     * @return a list of users older than the specified date, with limited user details.
+     */
+    @GetMapping("/older/{time}")
+    public ResponseEntity<List<UserOlderThanDto>> getAllUsersOlderThan(
+            @PathVariable("time") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        List<UserOlderThanDto> users = userService.findAllUsersOlderThan(date)
+                .stream()
+                .map(userMapper::toOlderThanDto)
+                .collect(Collectors.toList());
+
         return ResponseEntity.ok(users);
     }
 }

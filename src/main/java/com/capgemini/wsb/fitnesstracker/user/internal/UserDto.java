@@ -28,3 +28,12 @@ record SimpleUserDto(Long id, String firstName, String lastName) {}
  * @param email the email address of the user.
  */
 record UserEmailDto(Long id, String email) {}
+
+/**
+ * A Data Transfer Object representing a user with limited fields for age-based queries.
+ *
+ * @param firstName the first name of the user.
+ * @param lastName the last name of the user.
+ * @param birthdate the birthdate of the user.
+ */
+record UserOlderThanDto(String firstName, String lastName, LocalDate birthdate) {}

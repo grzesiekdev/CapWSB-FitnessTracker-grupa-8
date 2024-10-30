@@ -49,4 +49,15 @@ class UserMapper {
                         userDto.email());
     }
 
+    /**
+     * Converts a User entity to a UserOlderThanDto, containing only basic information
+     * such as first name, last name, and birthdate.
+     *
+     * @param user the User entity to convert.
+     * @return a UserOlderThanDto containing the first name, last name, and birthdate of the user.
+     */
+    UserOlderThanDto toOlderThanDto(User user) {
+        return new UserOlderThanDto(user.getFirstName(), user.getLastName(), user.getBirthdate());
+    }
+
 }
