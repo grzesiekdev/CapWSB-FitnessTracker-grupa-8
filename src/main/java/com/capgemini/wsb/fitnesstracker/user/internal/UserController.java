@@ -150,4 +150,23 @@ class UserController {
 
         return ResponseEntity.ok(users);
     }
+
+    /**
+     * Updates a user by their unique ID.
+     *
+     * @param id the unique ID of the user to update.
+     * @param userDto the updated user details.
+     * @return a ResponseEntity containing the updated UserDto.
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDto> updateUser(
+            @PathVariable Long id,
+            @RequestBody UserDto userDto) {
+
+        User updatedUser = userMapper.toEntity(userDto);
+        User savedUser = userService.updateUserById(id, updatedUser);
+        UserDto savedUserDto = userMapper.toDto(savedUser);
+
+        return ResponseEntity.ok(savedUserDto);
+    }
 }

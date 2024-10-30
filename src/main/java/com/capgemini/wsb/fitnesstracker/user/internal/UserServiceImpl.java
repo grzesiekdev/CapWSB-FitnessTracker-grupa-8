@@ -100,4 +100,32 @@ class UserServiceImpl implements UserService, UserProvider {
     public List<User> findAllUsersOlderThan(LocalDate date) {
         return userRepository.findByBirthdateBefore(date);
     }
+
+    /**
+     * Updates an existing user by their unique ID, allowing partial updates for each field.
+     *
+     * @param id the unique ID of the user to update.
+     * @param updatedUser the new user details, where fields can be null to indicate no update.
+     * @return the updated user.
+     * @throws NoSuchElementException if the user does not exist.
+     */
+    public User updateUserById(Long id, User updatedUser) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found."));
+
+        if (updatedUser.getFirstName() != null) {
+            existingUser.setFirstName(updatedUser.getFirstName());
+        }
+        if (updatedUser.getLastName() != null) {
+            existingUser.setLastName(updatedUser.getLastName());
+        }
+        if (updatedUser.getBirthdate() != null) {
+            existingUser.setBirthdate(updatedUser.getBirthdate());
+        }
+        if (updatedUser.getEmail() != null) {
+            existingUser.setEmail(updatedUser.getEmail());
+        }
+
+        return userRepository.save(existingUser);
+    }
 }
