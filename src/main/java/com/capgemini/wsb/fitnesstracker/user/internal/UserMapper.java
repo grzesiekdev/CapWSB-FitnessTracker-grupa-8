@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
  * Mapper class for converting between User entities and Data Transfer Objects (DTOs).
  */
 @Component
-class UserMapper {
+public class UserMapper {
 
     /**
      * Converts a User entity to a UserDto.
@@ -15,7 +15,7 @@ class UserMapper {
      * @param user the User entity to convert.
      * @return the converted UserDto.
      */
-    UserDto toDto(User user) {
+    public UserDto toDto(User user) {
         return new UserDto(user.getId(),
                            user.getFirstName(),
                            user.getLastName(),
