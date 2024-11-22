@@ -3,6 +3,7 @@ package com.capgemini.wsb.fitnesstracker.training.internal;
 import com.capgemini.wsb.fitnesstracker.training.api.CreateTrainingRequestDto;
 import com.capgemini.wsb.fitnesstracker.training.api.Training;
 import com.capgemini.wsb.fitnesstracker.training.api.TrainingProvider;
+import com.capgemini.wsb.fitnesstracker.training.api.UpdateTrainingRequestDto;
 import com.capgemini.wsb.fitnesstracker.user.api.User;
 import com.capgemini.wsb.fitnesstracker.user.internal.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -85,5 +86,30 @@ public class TrainingServiceImpl implements TrainingProvider {
         );
 
         return trainingRepository.save(training);
+    }
+
+    /**
+     * Updates an existing training.
+     *
+     * @param trainingId the ID of the training to update.
+     * @param request the DTO containing updated training details.
+     * @return the updated Training entity.
+     * @throws NoSuchElementException if the training or user is not found.
+     */
+    public Training updateTraining(Long trainingId, UpdateTrainingRequestDto request) {
+        Training existingTraining = trainingRepository.findById(trainingId)
+                .orElseThrow(() -> new NoSuchElementException("Training with ID " + trainingId + " not found"));
+
+        User user = userRepository.findById(request.userId())
+                .orElseThrow(() -> new NoSuchElementException("User with ID " + request.userId() + " not found"));
+
+        existingTraining.setUser(user);
+        existingTraining.setStartTime(request.startTime());
+        existingTraining.setEndTime(request.endTime());
+        existingTraining.setActivityType(request.activityType());
+        existingTraining.setDistance(request.distance());
+        existingTraining.setAverageSpeed(request.averageSpeed());
+
+        return trainingRepository.save(existingTraining);
     }
 }

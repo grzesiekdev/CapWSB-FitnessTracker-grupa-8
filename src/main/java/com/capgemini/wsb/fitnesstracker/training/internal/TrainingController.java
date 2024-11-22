@@ -3,6 +3,7 @@ package com.capgemini.wsb.fitnesstracker.training.internal;
 import com.capgemini.wsb.fitnesstracker.training.api.CreateTrainingRequestDto;
 import com.capgemini.wsb.fitnesstracker.training.api.Training;
 import com.capgemini.wsb.fitnesstracker.training.api.TrainingDto;
+import com.capgemini.wsb.fitnesstracker.training.api.UpdateTrainingRequestDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -88,5 +89,21 @@ public class TrainingController {
         Training savedTraining = trainingService.createTraining(request);
         TrainingDto trainingDto = trainingMapper.toDto(savedTraining);
         return ResponseEntity.status(HttpStatus.CREATED).body(trainingDto);
+    }
+
+    /**
+     * Updates an existing training.
+     *
+     * @param trainingId the ID of the training to update.
+     * @param request the request payload containing updated training details.
+     * @return the updated TrainingDto.
+     */
+    @PutMapping("/{trainingId}")
+    public ResponseEntity<TrainingDto> updateTraining(
+            @PathVariable Long trainingId,
+            @RequestBody @Valid UpdateTrainingRequestDto request) {
+        Training updatedTraining = trainingService.updateTraining(trainingId, request);
+        TrainingDto trainingDto = trainingMapper.toDto(updatedTraining);
+        return ResponseEntity.ok(trainingDto);
     }
 }
