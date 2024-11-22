@@ -23,6 +23,7 @@ public class TrainingMapper {
                 userMapper.toDto(training.getUser()),
                 training.getStartTime(),
                 training.getEndTime(),
+                training.getActivityType(),
                 training.getDistance(),
                 training.getAverageSpeed()
         );

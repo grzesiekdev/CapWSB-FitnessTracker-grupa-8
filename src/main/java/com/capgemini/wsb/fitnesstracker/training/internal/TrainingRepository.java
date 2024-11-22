@@ -23,4 +23,12 @@ interface TrainingRepository extends JpaRepository<Training, Long> {
      * @return a list of finished trainings.
      */
     List<Training> findAllByEndTimeAfter(Date afterTime);
+
+    /**
+     * Finds all trainings with the specified activity type.
+     *
+     * @param activityType the type of activity to filter by.
+     * @return a list of trainings with the given activity type.
+     */
+    List<Training> findAllByActivityType(ActivityType activityType);
 }

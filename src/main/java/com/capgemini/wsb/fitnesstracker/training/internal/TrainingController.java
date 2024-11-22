@@ -3,10 +3,7 @@ package com.capgemini.wsb.fitnesstracker.training.internal;
 import com.capgemini.wsb.fitnesstracker.training.api.TrainingDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
@@ -61,4 +58,17 @@ public class TrainingController {
                 .toList();
     }
 
+    /**
+     * Retrieves all trainings with the specified activity type.
+     *
+     * @param activityType the activity type to filter by.
+     * @return a list of TrainingDto objects matching the activity type.
+     */
+    @GetMapping("/activityType")
+    public List<TrainingDto> getTrainingsByActivityType(@RequestParam ActivityType activityType) {
+        return trainingService.findTrainingsByActivityType(activityType)
+                .stream()
+                .map(trainingMapper::toDto)
+                .toList();
+    }
 }

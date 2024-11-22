@@ -48,4 +48,14 @@ public class TrainingServiceImpl implements TrainingProvider {
     public List<Training> findFinishedTrainingsAfter(Date afterTime) {
         return trainingRepository.findAllByEndTimeAfter(afterTime);
     }
+
+    /**
+     * Retrieves all trainings with the specified activity type.
+     *
+     * @param activityType the activity type to filter by.
+     * @return a list of trainings with the given activity type.
+     */
+    public List<Training> findTrainingsByActivityType(ActivityType activityType) {
+        return trainingRepository.findAllByActivityType(activityType);
+    }
 }
