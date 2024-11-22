@@ -1,12 +1,16 @@
 package com.capgemini.wsb.fitnesstracker.training.internal;
 
+import com.capgemini.wsb.fitnesstracker.training.api.CreateTrainingRequestDto;
 import com.capgemini.wsb.fitnesstracker.training.api.Training;
 import com.capgemini.wsb.fitnesstracker.training.api.TrainingProvider;
+import com.capgemini.wsb.fitnesstracker.user.api.User;
+import com.capgemini.wsb.fitnesstracker.user.internal.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -14,6 +18,7 @@ import java.util.Optional;
 public class TrainingServiceImpl implements TrainingProvider {
 
     private final TrainingRepository trainingRepository;
+    private final UserRepository userRepository;
 
     @Override
     public Optional<Training> getTraining(final Long trainingId) {
@@ -57,5 +62,28 @@ public class TrainingServiceImpl implements TrainingProvider {
      */
     public List<Training> findTrainingsByActivityType(ActivityType activityType) {
         return trainingRepository.findAllByActivityType(activityType);
+    }
+
+    /**
+     * Creates a new training.
+     *
+     * @param request the DTO containing training details.
+     * @return the saved Training entity.
+     * @throws NoSuchElementException if the user is not found.
+     */
+    public Training createTraining(CreateTrainingRequestDto request) {
+        User user = userRepository.findById(request.userId())
+                .orElseThrow(() -> new NoSuchElementException("User with ID " + request.userId() + " not found"));
+
+        Training training = new Training(
+                user,
+                request.startTime(),
+                request.endTime(),
+                request.activityType(),
+                request.distance(),
+                request.averageSpeed()
+        );
+
+        return trainingRepository.save(training);
     }
 }

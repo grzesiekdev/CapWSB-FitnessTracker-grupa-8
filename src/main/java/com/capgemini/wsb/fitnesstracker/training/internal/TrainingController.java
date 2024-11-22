@@ -1,8 +1,13 @@
 package com.capgemini.wsb.fitnesstracker.training.internal;
 
+import com.capgemini.wsb.fitnesstracker.training.api.CreateTrainingRequestDto;
+import com.capgemini.wsb.fitnesstracker.training.api.Training;
 import com.capgemini.wsb.fitnesstracker.training.api.TrainingDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -70,5 +75,18 @@ public class TrainingController {
                 .stream()
                 .map(trainingMapper::toDto)
                 .toList();
+    }
+
+    /**
+     * Creates a new training.
+     *
+     * @param request the request payload containing training details.
+     * @return the created TrainingDto.
+     */
+    @PostMapping
+    public ResponseEntity<TrainingDto> createTraining(@RequestBody @Valid CreateTrainingRequestDto request) {
+        Training savedTraining = trainingService.createTraining(request);
+        TrainingDto trainingDto = trainingMapper.toDto(savedTraining);
+        return ResponseEntity.status(HttpStatus.CREATED).body(trainingDto);
     }
 }
