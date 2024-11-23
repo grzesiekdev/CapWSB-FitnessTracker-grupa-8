@@ -1,14 +1,15 @@
 package com.capgemini.wsb.fitnesstracker.training.internal;
 
-import com.capgemini.wsb.fitnesstracker.training.api.CreateTrainingRequestDto;
-import com.capgemini.wsb.fitnesstracker.training.api.Training;
-import com.capgemini.wsb.fitnesstracker.training.api.TrainingProvider;
-import com.capgemini.wsb.fitnesstracker.training.api.UpdateTrainingRequestDto;
+import com.capgemini.wsb.fitnesstracker.mail.api.MonthlyTrainingReportDto;
+import com.capgemini.wsb.fitnesstracker.training.api.*;
 import com.capgemini.wsb.fitnesstracker.user.api.User;
 import com.capgemini.wsb.fitnesstracker.user.internal.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -20,6 +21,7 @@ public class TrainingServiceImpl implements TrainingProvider {
 
     private final TrainingRepository trainingRepository;
     private final UserRepository userRepository;
+    private final TrainingMapper trainingMapper;
 
     @Override
     public Optional<Training> getTraining(final Long trainingId) {
@@ -112,4 +114,38 @@ public class TrainingServiceImpl implements TrainingProvider {
 
         return trainingRepository.save(existingTraining);
     }
+
+    /**
+     * Generates a monthly report for a specific user.
+     *
+     * @param userId the ID of the user.
+     * @param month the month for the report (e.g., "2024-10-01").
+     * @return a MonthlyTrainingReportDto containing user and training details.
+     */
+    public MonthlyTrainingReportDto generateMonthlyReport(Long userId, LocalDate month) {
+        // Calculate the first and last days of the given month
+        LocalDate startDate = month.withDayOfMonth(1); // First day of the month
+        LocalDate endDate = month.withDayOfMonth(month.lengthOfMonth()); // Last day of the month
+
+        // Convert LocalDate to java.util.Date
+        Date start = Timestamp.valueOf(startDate.atStartOfDay());
+        Date end = Timestamp.valueOf(endDate.atTime(LocalTime.MAX));
+
+        // Fetch trainings for the user within the date range
+        List<Training> trainings = trainingRepository.findAllByUserIdAndMonth(userId, start, end);
+
+        // Extract user details from the training list, if available
+        String userName = trainings.isEmpty() ? "" :
+                trainings.get(0).getUser().getFirstName() + " " + trainings.get(0).getUser().getLastName();
+        String userEmail = trainings.isEmpty() ? "" : trainings.get(0).getUser().getEmail();
+
+        // Build and return the MonthlyTrainingReportDto
+        return new MonthlyTrainingReportDto(
+                userId,
+                userName,
+                userEmail,
+                trainings.stream().map(trainingMapper::toDto).toList()
+        );
+    }
+
 }
