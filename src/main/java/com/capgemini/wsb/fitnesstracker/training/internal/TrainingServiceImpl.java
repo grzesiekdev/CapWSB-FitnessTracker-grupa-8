@@ -1,6 +1,7 @@
 package com.capgemini.wsb.fitnesstracker.training.internal;
 
 import com.capgemini.wsb.fitnesstracker.mail.api.MonthlyTrainingReportDto;
+import com.capgemini.wsb.fitnesstracker.mail.api.MonthlyAdminReportDto;
 import com.capgemini.wsb.fitnesstracker.training.api.*;
 import com.capgemini.wsb.fitnesstracker.user.api.User;
 import com.capgemini.wsb.fitnesstracker.user.internal.UserRepository;
@@ -14,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -123,23 +125,18 @@ public class TrainingServiceImpl implements TrainingProvider {
      * @return a MonthlyTrainingReportDto containing user and training details.
      */
     public MonthlyTrainingReportDto generateMonthlyReport(Long userId, LocalDate month) {
-        // Calculate the first and last days of the given month
-        LocalDate startDate = month.withDayOfMonth(1); // First day of the month
-        LocalDate endDate = month.withDayOfMonth(month.lengthOfMonth()); // Last day of the month
+        LocalDate startDate = month.withDayOfMonth(1);
+        LocalDate endDate = month.withDayOfMonth(month.lengthOfMonth());
 
-        // Convert LocalDate to java.util.Date
         Date start = Timestamp.valueOf(startDate.atStartOfDay());
         Date end = Timestamp.valueOf(endDate.atTime(LocalTime.MAX));
 
-        // Fetch trainings for the user within the date range
         List<Training> trainings = trainingRepository.findAllByUserIdAndMonth(userId, start, end);
 
-        // Extract user details from the training list, if available
         String userName = trainings.isEmpty() ? "" :
                 trainings.get(0).getUser().getFirstName() + " " + trainings.get(0).getUser().getLastName();
         String userEmail = trainings.isEmpty() ? "" : trainings.get(0).getUser().getEmail();
 
-        // Build and return the MonthlyTrainingReportDto
         return new MonthlyTrainingReportDto(
                 userId,
                 userName,
@@ -148,4 +145,32 @@ public class TrainingServiceImpl implements TrainingProvider {
         );
     }
 
+    /**
+     * Generates a monthly summary report for the administrator.
+     *
+     * @param month the month for which the report is generated.
+     * @return a {@link MonthlyAdminReportDto} containing user summaries.
+     */
+    public MonthlyAdminReportDto generateAdminMonthlyReport(LocalDate month) {
+        LocalDate startDate = month.withDayOfMonth(1);
+        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+
+        List<MonthlyAdminReportDto.UserTrainingSummary> userSummaries = userRepository.findAll().stream()
+                .map(user -> {
+                    int trainingCount = trainingRepository.findAllByUserIdAndMonth(
+                            user.getId(),
+                            java.sql.Date.valueOf(startDate),
+                            java.sql.Date.valueOf(endDate)
+                    ).size();
+
+                    return new MonthlyAdminReportDto.UserTrainingSummary(
+                            user.getFirstName() + " " + user.getLastName(),
+                            user.getEmail(),
+                            trainingCount
+                    );
+                })
+                .collect(Collectors.toList());
+
+        return new MonthlyAdminReportDto(month.toString(), userSummaries);
+    }
 }

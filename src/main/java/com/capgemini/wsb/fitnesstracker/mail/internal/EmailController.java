@@ -1,5 +1,6 @@
 package com.capgemini.wsb.fitnesstracker.mail.internal;
 
+import com.capgemini.wsb.fitnesstracker.mail.api.MonthlyAdminReportDto;
 import com.capgemini.wsb.fitnesstracker.mail.api.MonthlyTrainingReportDto;
 import com.capgemini.wsb.fitnesstracker.training.internal.TrainingServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -70,6 +71,26 @@ public class EmailController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to send the report: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Sends the monthly training summary report to the administrator.
+     *
+     * @param adminEmail the email address of the administrator.
+     * @param month      the month for the report (format: "YYYY-MM").
+     * @return a success message if the email is sent.
+     */
+    @PostMapping("/monthly-admin-report")
+    public ResponseEntity<String> sendAdminMonthlyReport(@RequestParam String adminEmail, @RequestParam String month) {
+        try {
+            LocalDate reportMonth = LocalDate.parse(month + "-01");
+            MonthlyAdminReportDto report = trainingService.generateAdminMonthlyReport(reportMonth);
+            emailService.sendAdminMonthlyReport(adminEmail, report);
+            return ResponseEntity.ok("Admin monthly report sent to " + adminEmail);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to send the admin report: " + e.getMessage());
         }
     }
 }

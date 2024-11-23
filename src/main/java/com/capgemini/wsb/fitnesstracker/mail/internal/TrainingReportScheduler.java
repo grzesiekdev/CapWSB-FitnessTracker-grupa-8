@@ -1,5 +1,6 @@
 package com.capgemini.wsb.fitnesstracker.mail.internal;
 
+import com.capgemini.wsb.fitnesstracker.mail.api.MonthlyAdminReportDto;
 import com.capgemini.wsb.fitnesstracker.mail.api.MonthlyTrainingReportDto;
 import com.capgemini.wsb.fitnesstracker.training.internal.TrainingServiceImpl;
 import com.capgemini.wsb.fitnesstracker.user.api.User;
@@ -54,5 +55,19 @@ public class TrainingReportScheduler {
                 emailService.sendMonthlyReport(report);
             }
         }
+    }
+
+    /**
+     * Generates and sends a monthly admin summary report.
+     * Scheduled to run on the 1st day of every month at 8:00 AM.
+     */
+    @Scheduled(cron = "0 0 8 1 * *")
+    public void generateAndSendMonthlyAdminReport() {
+        LocalDate previousMonth = LocalDate.now().minusMonths(1);
+
+        String adminEmail = "admin@example.com";
+
+        MonthlyAdminReportDto report = trainingService.generateAdminMonthlyReport(previousMonth);
+        emailService.sendAdminMonthlyReport(adminEmail, report);
     }
 }

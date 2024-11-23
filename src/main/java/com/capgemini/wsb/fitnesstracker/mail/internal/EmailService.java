@@ -2,6 +2,7 @@ package com.capgemini.wsb.fitnesstracker.mail.internal;
 
 import com.capgemini.wsb.fitnesstracker.mail.api.EmailDto;
 import com.capgemini.wsb.fitnesstracker.mail.api.EmailSender;
+import com.capgemini.wsb.fitnesstracker.mail.api.MonthlyAdminReportDto;
 import com.capgemini.wsb.fitnesstracker.mail.api.MonthlyTrainingReportDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -72,4 +73,38 @@ public class EmailService {
 
         return content.toString();
     }
+
+    /**
+     * Sends a monthly admin report email.
+     *
+     * @param adminEmail the administrator's email address.
+     * @param report     the monthly admin training summary report.
+     */
+    public void sendAdminMonthlyReport(String adminEmail, MonthlyAdminReportDto report) {
+        String content = formatAdminReport(report);
+        EmailDto email = new EmailDto(adminEmail, "Monthly Training Summary (Admin)", content);
+        emailSender.send(email);
+    }
+
+    /**
+     * Formats the admin report into a user-friendly email body.
+     *
+     * @param report the admin training summary report.
+     * @return the formatted email content.
+     */
+    private String formatAdminReport(MonthlyAdminReportDto report) {
+        StringBuilder content = new StringBuilder();
+        content.append("Dear Administrator,\n\n");
+        content.append("Here is the training summary for ").append(report.month()).append(":\n\n");
+
+        report.users().forEach(user -> {
+            content.append("User: ").append(user.userName()).append("\n");
+            content.append("Email: ").append(user.email()).append("\n");
+            content.append("Trainings Completed: ").append(user.trainingCount()).append("\n\n");
+        });
+
+        content.append("Best regards,\nYour Fitness Tracker Team");
+        return content.toString();
+    }
+
 }
