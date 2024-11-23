@@ -149,7 +149,21 @@
 			"name": "7. Znalezienie wszystkich użytkowników starszych niz przekazana data",
 			"request": {
 				"method": "GET",
-				"header": []
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9012/v1/users/older/1980-10-30",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9012",
+					"path": [
+						"v1",
+						"users",
+						"older",
+						"1980-10-30"
+					]
+				}
 			},
 			"response": []
 		},
