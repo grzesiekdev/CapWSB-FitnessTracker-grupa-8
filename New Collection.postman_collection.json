@@ -154,7 +154,7 @@
 			"response": []
 		},
 		{
-			"name": "New Request",
+			"name": "8. Aktualizacja danych użytkownika",
 			"request": {
 				"method": "PUT",
 				"header": [],
@@ -178,6 +178,214 @@
 						"v1",
 						"users",
 						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "9. Pobranie wszystkich treningów",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9012/v1/trainings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9012",
+					"path": [
+						"v1",
+						"trainings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "10. Pobranie wszystki treningów danego użytkownika",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9012/v1/trainings/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9012",
+					"path": [
+						"v1",
+						"trainings",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "11. Pobranie treningów starszych niż <data>",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9012/v1/trainings/finished/2024-01-18",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9012",
+					"path": [
+						"v1",
+						"trainings",
+						"finished",
+						"2024-01-18"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "12. Pobranie wszystkich treningów konkretnego typu",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9012/v1/trainings/activityType?activityType=RUNNING",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9012",
+					"path": [
+						"v1",
+						"trainings",
+						"activityType"
+					],
+					"query": [
+						{
+							"key": "activityType",
+							"value": "RUNNING"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "13. Utworzenie nowego treningu",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\": 1,\r\n    \"startTime\": \"2024-04-01T11:00:00\",\r\n    \"endTime\": \"2024-04-01T11:30:00\",\r\n    \"activityType\": \"RUNNING\",\r\n    \"distance\": 21.37,\r\n    \"averageSpeed\": 8.2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9012/v1/trainings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9012",
+					"path": [
+						"v1",
+						"trainings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "14. Aktualizacja treningu",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\": 1,\r\n    \"startTime\": \"2022-04-01T10:00:00\",\r\n    \"endTime\": \"2022-04-01T11:00:00\",\r\n    \"activityType\": \"TENNIS\",\r\n    \"distance\": 0.0,\r\n    \"averageSpeed\": 0.0\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9012/v1/trainings/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9012",
+					"path": [
+						"v1",
+						"trainings",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "15. Wysłanie podsumowań treningów z całego miesiąca do wybranego użytkownika",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9012/v1/emails/monthly-report/1?month=2024-01",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9012",
+					"path": [
+						"v1",
+						"emails",
+						"monthly-report",
+						"1"
+					],
+					"query": [
+						{
+							"key": "month",
+							"value": "2024-01"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "16. Wysłanie podsumowań treningów wszystkich użytkowników do administratora systemu",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9012/v1/emails/monthly-admin-report?adminEmail=admin@example.com&month=2024-10",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9012",
+					"path": [
+						"v1",
+						"emails",
+						"monthly-admin-report"
+					],
+					"query": [
+						{
+							"key": "adminEmail",
+							"value": "admin@example.com"
+						},
+						{
+							"key": "month",
+							"value": "2024-10"
+						}
 					]
 				}
 			},
